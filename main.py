@@ -8,7 +8,15 @@ This project is dedicated to reduce my anxiety.
 """
 
 from bs4 import BeautifulSoup
+import time
 import requests
+
+"""
+TODO:
+    1. Get rid of duplicate likes. Weibo sometimes cleans user side Like button as clickable even you already liked that post
+    2. User-friendly outputs e.g. "LIKE ACTION SUCCESS, FAILED, try-catch"
+    3. Server based plan
+"""
 
 """
 You need to config these to use the script.
@@ -30,6 +38,7 @@ You need to config these to use the script.
 target_user_link = "https://weibo.cn/rmrb"
 
 
+
 # Set requests' user-agent and cookies
 # Initialize cookie names and dict
 cookieNames = ["ALF", "SCF", "SSOLoginState", "SUB", "SUBP", "SUHB", "WEIBOCN_FROM", "_T_WM"]
@@ -49,6 +58,8 @@ for eachline in cookieFile:
 # Pretend as some regular browsers
 requestHead = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'}
 
+
+
 # Try getting each weibo attitude action link
 def get_attitude_links(parsedPage, attitudeLinks):
     for link in parsedPage.find_all('a'):
@@ -65,11 +76,40 @@ def initialize_weibo_page(attitudeLinks):
     parser = BeautifulSoup(weiboPage.text, features="lxml")
     get_attitude_links(parser, attitudeLinks)
 
+# access links we get from initializing
+def attitude_access(accessURL):
+    # Since WAP weibo made Like button to a link, we only need to "get" that action URL
+    requests.get(accessURL, cookies = realCookies, headers = requestHead)
+
+
 # Here we go!
+"""
+假如你是李华，你有一个在微博上互粉的好友叫 Lily，你很关心她，她也很关心你，但不知道为什么，她不给你的微博点赞。
+虽然你知道她一直都很忙，但你的心很涼、很失落，于是决定写封信给她，来表达自己的焦虑。
+
+作文要求：
+1. 表达誠恳的态度，要让她知道你是真的很关心她
+2. 提出合理的解决方案。
+3. 不少于 100 行代码。
+"""
 def main():
-    # First of all, we need to get links we are about to click
+    # Dear Lily, I know you don't have enough time to read my posts on Weibo. So I'm writing to you on GitHub in order to provide a solutions for you.
+    # First and foremost, we need to get links we are about to click. I choose to store them in an array
     attitudeLinks = []
     initialize_weibo_page(attitudeLinks)
     
-main()
+    # What's next, I think it's a time for you to click those links. I know you don't have very spare time for visiting my Weibo account.
+    # So here is my gift, it's an automation code piece, which will help you make my heart happy.
+    for eachlink in attitudeLinks:
+        attitude_access(eachlink)
+        # In addition, Weibo doesn't let us access so fast, we need to give its servers a break.
+        time.sleep(2) # In my opinion, 2 seconds is enough for a computer to sleep.
     
+main()
+
+"""
+I'd like to appreciate it if you could give me reply at your earliest convenience.
+
+Sincerely,
+Li Hua
+"""    
