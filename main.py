@@ -33,6 +33,7 @@ You need to config these to use the script.
         Copy your cookie data strings in this order:
             "ALF", "SCF", "SSOLoginState", "SUB", "SUBP", "SUHB", "WEIBOCN_FROM", "_T_WM"
         Each data can only use one line.
+        If one of them is missing, just type random strings respectively.
         
 """
 target_user_link = "https://weibo.cn/Noumusama"
@@ -74,6 +75,8 @@ def initialize_weibo_page(attitudeLinks):
     # weiboPage = open("./testpage.html", encoding='UTF-8')
     weiboPage = requests.get(target_user_link, cookies = realCookies, headers = requestHead)
     parser = BeautifulSoup(weiboPage.text, features="lxml")
+    nameOfUserFakeGroup = re.findall("(.*?)的微博", parser.title.string)
+    print("Target user: \033[1m" + nameOfUserFakeGroup[0], end = "\033[0m\n")
     get_attitude_links(parser, attitudeLinks)
 
 # access links we get from initializing
