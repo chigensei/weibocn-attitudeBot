@@ -10,12 +10,12 @@ This project is dedicated to reduce my anxiety.
 from bs4 import BeautifulSoup
 import time
 import requests
+import re
 
 """
 TODO:
     1. Get rid of duplicate likes. Weibo sometimes cleans user side Like button as clickable even you already liked that post
-    2. User-friendly outputs e.g. "LIKE ACTION SUCCESS, FAILED, try-catch"
-    3. Server based plan
+    2. Server based plan
 """
 
 """
@@ -35,7 +35,7 @@ You need to config these to use the script.
         Each data can only use one line.
         
 """
-target_user_link = "https://weibo.cn/rmrb"
+target_user_link = "https://weibo.cn/Noumusama"
 
 
 
@@ -79,7 +79,12 @@ def initialize_weibo_page(attitudeLinks):
 # access links we get from initializing
 def attitude_access(accessURL):
     # Since WAP weibo made Like button to a link, we only need to "get" that action URL
-    requests.get(accessURL, cookies = realCookies, headers = requestHead)
+    attitudeResult = requests.get(accessURL, cookies = realCookies, headers = requestHead)
+    if attitudeResult.status_code == 200:
+        print("\033[1;32mSUCCESS\033[0m")
+    else:
+        print("\033[1;31mFAIL\033[0m")
+    
 
 
 # Here we go!
@@ -97,13 +102,16 @@ def main():
     # First and foremost, we need to get links we are about to click. I choose to store them in an array
     attitudeLinks = []
     initialize_weibo_page(attitudeLinks)
-    
+    print("Total links available: \033[1;36m" + str(len(attitudeLinks)), end = "\033[0m \n")
+
     # What's next, I think it's a time for you to click those links. I know you don't have very spare time for visiting my Weibo account.
     # So here is my gift, it's an automation code piece, which will help you make my heart happy.
     for eachlink in attitudeLinks:
+        currentPostID = re.findall(r'attitude\/(.*?)\/add\?', eachlink)
+        print("\033[0;34mAdding attitude for post \033[0;33m" + currentPostID[0] + "...", end = "\033[0m")
         attitude_access(eachlink)
         # In addition, Weibo doesn't let us access so fast, we need to give its servers a break.
-        time.sleep(2) # In my opinion, 2 seconds is enough for a computer to sleep.
+        time.sleep(1) # In my opinion, 1 second is enough for a computer to sleep.
     
 main()
 
